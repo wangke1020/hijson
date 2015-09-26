@@ -1,6 +1,6 @@
 #include <iostream>
-#include "json.h"
-#include "convert.hpp"
+#include "../src/json.h"
+#include "../src/convert.hpp"
 using namespace std;
 using namespace json;
 using namespace json::adapt;
