@@ -1,7 +1,7 @@
 # hijson
 It is based on [SuperEasyJSON](http://sourceforge.net/projects/supereasyjson/) inspired by [msgpack](https://github.com/msgpack/msgpack).
 
-So far, it just can simply convert a vecotor or a map to Json Value. 
+So far, it just can simply convert a vector or a map to Json Value. 
 ```
 	vector<vector<string>> v;
 	auto v1 = vector<string>{"a","b"};
@@ -19,4 +19,4 @@ So far, it just can simply convert a vecotor or a map to Json Value.
 
 	cout << Serialize(convert<decltype(map)>()(map)) << endl;
 ```
-*custom adaptors* will be come soon.
+New features like [*custom adaptors*](https://github.com/msgpack/msgpack-c/wiki/v1_1_cpp_adaptor) will be come soon.
