@@ -6,7 +6,7 @@ using namespace std;
 
 namespace json
 {
-	namespace adapt
+	namespace adaptor
 	{
 		class type_error : public std::exception { };
 
@@ -18,11 +18,11 @@ namespace json
 				throw type_error();
 			}
 		};
-		
-		#define ADD_SPECIALIZATION_CONVERT_TYPE(T)       \
+
+#define ADD_SPECIALIZATION_CONVERT_TYPE(T)       \
 			template<>                                   \
 			struct convert<T>{                           \
-				Value operator()(T t) const{             \
+				Value operator()(const T& t) const{             \
 					return Value(t);                     \
 				}                                        \
 			};
@@ -38,7 +38,7 @@ namespace json
 		template <typename T, typename Alloc>
 		struct convert<vector<T, Alloc> >
 		{
-			Value  operator()(vector<T, Alloc>& v) const
+			Value  operator()(const vector<T, Alloc>& v) const
 			{
 				Array arr;
 				for (auto it : v)
@@ -52,7 +52,7 @@ namespace json
 		// convert a convert unordered_map<string, ...> to Json Value
 		template <typename V, typename Hash, typename Pred, typename Alloc>
 		struct convert<unordered_map<string, V, Hash, Pred, Alloc> > {
-			Value operator()(unordered_map<string, V, Hash, Pred, Alloc>& map) const {
+			Value operator()(const unordered_map<string, V, Hash, Pred, Alloc>& map) const {
 				Object o;
 				for (auto iter : map)
 				{
@@ -62,6 +62,15 @@ namespace json
 			}
 		};
 
+		template<typename T>
+		Value Convert(T& t)
+		{
+			return convert<T>()(t);
+		}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		/* 
 		   struct as. convert a Json value to some struct.
@@ -80,7 +89,7 @@ namespace json
 		template<>                            \
 		struct as<T>                          \
 		{                                     \
-			T operator()(Value value)         \
+			T operator()(const Value& value)         \
 			{                                 \
 				return (T)value;              \
 			}                                 \
@@ -96,33 +105,40 @@ namespace json
 		template <typename T, typename Alloc>
 		struct as<vector<T, Alloc> >
 		{
-			vector<T, Alloc> operator()(Value value) const
+			vector<T, Alloc> operator()(const Value& value) const
 			{
 				if (value.GetType() != ValueType::ArrayVal) throw type_error();
 				Array arr = value.ToArray();
 				vector<T, Alloc> v;
 				for (auto i : arr)
 				{
-					arr.push_back(as<T>()(i));
+					v.push_back(as<T>()(i));
 				}
+				return v;
 			}
 		};
 
 		template <typename V, typename Hash, typename Pred, typename Alloc>
 		struct as<unordered_map<string, V, Hash, Pred, Alloc>>
 		{
-			unordered_map<string, V, Hash, Pred, Alloc> operator()(Value value) const 
+			unordered_map<string, V, Hash, Pred, Alloc> operator()(const Value& value) const 
 			{
 				if (value.GetType() != ValueType::ObjectVal) throw type_error();
-				unordered_map < string, V, Hash, Pred, Alloc >> map;
+				unordered_map < string, V, Hash, Pred, Alloc > map;
 				Object o = value.ToObject();
 				for (auto iter : o)
 				{
-					map[iter.first] = as<V>()(iter.second)£»
+					map[iter.first] = as<V>()(iter.second);
 				}
 				return map;
 			}
 		};
+
+		template<typename T>
+		T As(const Value& v)
+		{
+			return as<T>()(v);
+		}
 	}
 }
 
