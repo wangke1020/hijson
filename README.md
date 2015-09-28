@@ -1,7 +1,7 @@
 # hijson
 It is based on [SuperEasyJSON](http://sourceforge.net/projects/supereasyjson/) inspired by [msgpack](https://github.com/msgpack/msgpack).
 
-So far, it just can simply convert a vector or a map to Json Value. 
+So far, it just can simply convert  bettween a vector or a map  and Json Value.
 ```
 	using test_vector_t = vector<vector<string>>;
 	test_vector_t v;
