@@ -2,7 +2,7 @@
 It is based on [SuperEasyJSON](http://sourceforge.net/projects/supereasyjson/) inspired by [msgpack](https://github.com/msgpack/msgpack).
 
 So far, it just can simply convert  bettween a vector or a map  and Json Value.
-```
+```cpp
 	using test_vector_t = vector<vector<string>>;
 	test_vector_t v;
 	auto v1 = vector<string>{ "a","b" };
