@@ -3,20 +3,26 @@ It is based on [SuperEasyJSON](http://sourceforge.net/projects/supereasyjson/) i
 
 So far, it just can simply convert a vector or a map to Json Value. 
 ```
-	vector<vector<string>> v;
-	auto v1 = vector<string>{"a","b"};
-	auto v2 = vector<string>{"d", "d"};
-	auto v3 = vector<string>{"e"};
+	using test_vector_t = vector<vector<string>>;
+	test_vector_t v;
+	auto v1 = vector<string>{ "a","b" };
+	auto v2 = vector<string>{ "d", "d" };
+	auto v3 = vector<string>{ "e" };
 	v.push_back(v1);
 	v.push_back(v2);
 	v.push_back(v3);
-	cout << Serialize(convert<decltype(v)>()(v)) << endl;
+	Value vecVaule = Convert(v);
+	cout << Serialize(vecVaule) << endl;
+	auto new_v = As<test_vector_t>(vecVaule);
 
-	unordered_map<string, vector<string>> map;
+	using test_map_t = unordered_map<string, vector<string>>;
+	test_map_t map;
 	map["v1"] = v1;
 	map["v2"] = v2;
 	map["v3"] = v3;
+	Value mapValue = Convert(map);
+	cout << Serialize(mapValue) << endl;
 
-	cout << Serialize(convert<decltype(map)>()(map)) << endl;
+	auto new_map = As<test_map_t>(mapValue);
 ```
-New features like [*custom adaptors*](https://github.com/msgpack/msgpack-c/wiki/v1_1_cpp_adaptor) will be come soon.
+
