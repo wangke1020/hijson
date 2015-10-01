@@ -15,7 +15,7 @@ It  can simply convert a vector or a map to Json Value.
 ```
 
 ```cpp
-	//adator macro
+	//adaptor macro
 	class B
 	{
 	public:
