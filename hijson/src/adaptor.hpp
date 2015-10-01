@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __ADAPTOR_HPP__
+#define __ADAPTOR_HPP__
 #include "json.h"
 #include <vector>
 #include <unordered_map>
@@ -13,9 +14,9 @@ namespace json
 		template<typename T>
 		struct convert
 		{
-			Value operator()(T t) const
+			Value operator()(const T& t)
 			{
-				throw type_error();
+				return t.toJsonValue();
 			}
 		};
 
@@ -63,7 +64,7 @@ namespace json
 		};
 
 		template<typename T>
-		Value Convert(T& t)
+		Value Convert(const T& t)
 		{
 			return convert<T>()(t);
 		}
@@ -79,9 +80,10 @@ namespace json
 		template<typename T>
 		struct as
 		{
-			T operator()(Value value) const
+			T& operator()(const Value& value, T& t)
 			{
-				throw type_error();
+				t.fromJsonValue(value);
+				return t;
 			}
 		};
 
@@ -89,9 +91,10 @@ namespace json
 		template<>                            \
 		struct as<T>                          \
 		{                                     \
-			T operator()(const Value& value)         \
+			T& operator()(const Value& value, T& t)         \
 			{                                 \
-				return (T)value;              \
+				t =  (T)value;              \
+				return t;                    \
 			}                                 \
 		}; 
 
@@ -105,40 +108,43 @@ namespace json
 		template <typename T, typename Alloc>
 		struct as<vector<T, Alloc> >
 		{
-			vector<T, Alloc> operator()(const Value& value) const
+			vector<T, Alloc>& operator()(const Value& value, vector<T, Alloc>& vec) const
 			{
 				if (value.GetType() != ValueType::ArrayVal) throw type_error();
 				Array arr = value.ToArray();
-				vector<T, Alloc> v;
 				for (auto i : arr)
 				{
-					v.push_back(as<T>()(i));
+					T t;
+					as<T>()(i, t);
+					vec.push_back(t);
 				}
-				return v;
+				return vec;
 			}
 		};
 
 		template <typename V, typename Hash, typename Pred, typename Alloc>
 		struct as<unordered_map<string, V, Hash, Pred, Alloc>>
 		{
-			unordered_map<string, V, Hash, Pred, Alloc> operator()(const Value& value) const 
+			using map_t = unordered_map<string, V, Hash, Pred, Alloc>;
+			map_t & operator()(const Value& value, map_t& map) const
 			{
 				if (value.GetType() != ValueType::ObjectVal) throw type_error();
-				unordered_map < string, V, Hash, Pred, Alloc > map;
 				Object o = value.ToObject();
 				for (auto iter : o)
 				{
-					map[iter.first] = as<V>()(iter.second);
+					V v;
+					as<V>()(iter.second, v);
+					map[iter.first] = v;
 				}
 				return map;
 			}
 		};
 
 		template<typename T>
-		T As(const Value& v)
+		T& As(const Value& v, T& t)
 		{
-			return as<T>()(v);
+			return as<T>()(v, t);
 		}
 	}
 }
-
+#endif
